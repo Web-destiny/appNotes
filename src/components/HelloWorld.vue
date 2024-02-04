@@ -36,9 +36,10 @@
               v-for="(myNote, index) in notes"
               :key="index"
               :noteIndex="index"
-              @click="highlightChosenNote"
+              @click="chooseNote"
+              v-bind:selected="myNote.selected"
           >
-            {{ myNote }}
+            {{ myNote.text }}
             <div
                 @click.stop="deleteNote(index)"
                 class="delete-icon"
@@ -73,103 +74,40 @@ export default {
       placeholder: 'Введите название новой заметки',
       title: 'Список заметок',
       inputValue: '',
-      notes: ['Заметка 1', 'Заметка 2'],
-      chosenNotes: [],
+      notes: [
+        {text: 'Заметка 1', selected: false},
+        {text: 'Заметка 2', selected: false}
+      ]
     }
   },
   methods: {
     addNewNote(){
       if(this.inputValue !== ''){
-        this.notes.push(this.inputValue)
+        this.notes.push({text: this.inputValue, selected: false})
         this.inputValue = ''
       }
     },
     deleteNote(index){
-      // let index = Number(event.target.closest('.list-item').getAttribute('noteIndex'))
       this.notes.splice(index, 1)
     },
     deleteLastNote(){
-
-      if(this.chosenNotes.length === 0){
-        console.log('что простите')
-        this.notes.pop()
-      }else{
-
-        let lastItem = document.querySelector('.list li:last-child'); // Получить последний элемент li
-
-        if(lastItem.classList.contains('chosen-list-item')){
-
-          let indexDelNote = lastItem.getAttribute('noteIndex'); // Получить значение атрибута индекс
-
-          for (let chosenNote of this.chosenNotes) {
-
-            console.log(indexDelNote, chosenNote.index)
-            console.log(indexDelNote === chosenNote.index)
-            this.chosenNotes.sort ((a, b) => a.index - b.index)
-            let chosenIndex = this.chosenNotes.findIndex (el => el === chosenNote.index)
-            this.chosenNotes.splice (chosenIndex, 1)
-
-          }
-
-          this.notes.pop()
-
-        }else{
-          console.log('wutifuk?')
-          this.notes.pop()
-        }
-        console.log(this.chosenNotes)
-
-      }
-
+      this.notes.pop()
     },
     deleteChosenNote(){
-      console.log('эмммы')
-
-      for (let chosenNote of this.chosenNotes) {
-
-        let chosenIndex = this.notes.findIndex (el => el === chosenNote.textNote)
-        this.notes.splice (chosenIndex, 1)
-
-      }
-
-      this.chosenNotes = [];
-
-      document.querySelectorAll('.list-item').forEach(function (item) {
-        item.classList.remove('chosen-list-item')
-      })
-
+      this.notes = this.notes.filter(note => !note.selected)
     },
-
-    highlightChosenNote(event){
-
-      if(event.target.classList.contains('chosen-list-item')){
-
-        event.target.classList.remove('chosen-list-item')
-
-        // Найти индекс элемента в массиве chosenNotes по тексту
-        let chosenIndex = this.chosenNotes.findIndex (el => el.textNote === event.target.innerText)
-
-        // Удалить элемент из массива chosenNotes по индексу
-        this.chosenNotes.splice (chosenIndex, 1)
-        console.log (this.chosenNotes)
-
-      }else{
-        console.log('add')
-        event.target.classList.add('chosen-list-item')
-
-        let objChosenNote = {
-          textNote: event.target.innerText,
-          index: event.target.getAttribute('noteIndex')
-        }
-
-        this.chosenNotes.push(objChosenNote)
-        console.log(this.chosenNotes)
-      }
+    chooseNote(event){
+      let note = event.target
+      let index = note.getAttribute('noteIndex')
+      this.notes[index].selected = !this.notes[index].selected
     },
   },
   computed: {
     doubleCount(){
       return this.notes.length * 2
+    },
+    chosenNotes(){
+      return this.notes.filter(note => note.selected).map(note => note.text)
     }
   }
 }
@@ -187,6 +125,10 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+}
+li[selected='true'] {
+  background-color: yellow;
+  border: 1px solid black;
 }
 a {
   color: #42b983;
