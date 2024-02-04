@@ -37,7 +37,7 @@
               :key="index"
               :noteIndex="index"
               @click="chooseNote"
-              v-bind:selected="myNote.selected"
+              :selected="myNote.selected"
           >
             {{ myNote.text }}
             <div
@@ -126,10 +126,6 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
-li[selected='true'] {
-  background-color: yellow;
-  border: 1px solid black;
-}
 a {
   color: #42b983;
 }
@@ -163,16 +159,17 @@ a {
   cursor: pointer;
 }
 
-.list-item.chosen-list-item{
-  background-color: orange;
+.list-item[selected='true'] {
+  background-color: yellow;
+  border: 1px solid black;
 }
 
-.list-item.chosen-list-item .delete-icon svg{
+.list-item[selected='true'] .delete-icon svg{
   fill: #000000;
 }
 
-.list-item.chosen-list-item .delete-icon svg:hover{
-  fill: #ffffff;
+.list-item[selected='true'] .delete-icon svg:hover{
+  fill: #fe0000;
 }
 
 .delete-icon{
